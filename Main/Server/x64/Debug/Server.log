@@ -1,0 +1,3 @@
+﻿  Server.cpp
+C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Server\Server.cpp(36,28): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Server.vcxproj -> C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Server\x64\Debug\Server.exe

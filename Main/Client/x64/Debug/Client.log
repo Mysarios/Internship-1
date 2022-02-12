@@ -1,0 +1,5 @@
+﻿  Client.cpp
+C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Client\Client.cpp(35,26): warning C4244: -=: преобразование "double" в "int", возможна потеря данных
+C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Client\Client.cpp(47,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Client\Client.cpp(75,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Client.vcxproj -> C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Client\x64\Debug\Client.exe
