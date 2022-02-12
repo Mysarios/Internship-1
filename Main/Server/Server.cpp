@@ -31,16 +31,23 @@ int main(){
 		std::cout << "Connected!!" << std::endl;
 	}
 	char Buffer[128];
-	for (;;) {
+	//for (;;) {
 		recv(NewConnect, Buffer, sizeof(Buffer), NULL);
 		int Size = strlen(Buffer);
+		Size = sizeof(Buffer);
 
-		std::cout << "Size= " << (int)Buffer[0] << std::endl;
+		//std::cout << "Size= " << (int)Buffer[0] << std::endl;
 		//std::cout << "Msg from client= "<< std::endl;
-		for (int Index = 1; Index <= Buffer[0]; Index++) {
+		for (int Index = 0; Index <= Size; Index++) {
 			std::cout << Buffer[Index];
 		}
 		std::cout << std::endl;
-	}
+		int i = 0;
+		while ((int)Buffer[i]!=-52) {
+			std::cout << (int)Buffer[i];
+			i++;
+		}
+		std::cout << std::endl;
+	//}
 	system("pause");
 }

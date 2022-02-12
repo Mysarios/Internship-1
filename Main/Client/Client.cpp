@@ -19,20 +19,20 @@ char* Insert(int &SizeOfArray, char Array[],char Element,int Position){
 	SizeOfArray++;
 	return Array;
 }
-char* GetSizeOfInt(int &Size,int num) {
-	Size = 0;
+char* GetSizeOfInt(int num) {
+	int Size = 0;
 	int NumBuf=num;
 	while (NumBuf) {
 		NumBuf /= 10;
 		Size++;
 	}
-	char* Array = new char[Size];
+	char* Array = new char[Size-1];
 	Array[0] = num / (int)pow(10, Size - 1);
 	std::cout << (int)Array[0];
 	for (int i = 1; i < Size; i++) {
 		Array[i] = num / (int)pow(10, Size - 1 - i) - (int)Array[i-1] * 10;
 		std::cout << (int)Array[i];
-		num -= (int)Array[i-1] * pow(10, Size - 1);
+		num -= (int)Array[i-1] * pow(10, Size - i);
 	}
 	return Array;
 }
@@ -45,10 +45,10 @@ public:
 		Switcher.lock();
 		std::cin >> Word;
 		int Size = strlen(Word);
-		if (Size > 64) {
+		/*if (Size > 64) {
 			std::cout << "Long Word!" << std::endl;
 			return;
-		}
+		}*/
 
 		for (int Index = 0; Index < Size;Index++) {
 				if (('9' < Word[Index]) || (Word[Index] < '0')) {
@@ -64,9 +64,7 @@ public:
 				Insert(Size, Word, 'B', ++Index);
 			}
 		}
-		//for (int Index = 0; Index < Size; Index++) {
-		//	std::cout << Word[Index] << std::endl;
-		//}
+
 		Switcher.unlock();
 		return;
 	}
@@ -80,9 +78,19 @@ public:
 			}
 		}
 		std::cout << "Sum of Elements= " << sum << std::endl;
-		//Insert(Size, Word, Size, 0);
-		//char Message[]=Size;
-		//send(Connection,Message,1, NULL);
+
+		int ArraySize = 0;
+		int NumBuf = sum;
+		while (NumBuf) {
+			NumBuf /= 10;
+			ArraySize++;
+		}
+
+		char* Message = new char[ArraySize - 1];
+		std::cout << ArraySize << std::endl;
+		Message=GetSizeOfInt(sum);
+		send(Connection,Message,sizeof(Message), NULL);
+
 		Word = NULL;
 		Switcher.unlock();
 		
@@ -92,8 +100,6 @@ public:
 
 int main()
 {	
-	int c = 1;
-	GetSizeOfInt(c, 13223);
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
 	if (WSAStartup(DLLVersion, &wsaData) != 0) {
