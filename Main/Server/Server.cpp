@@ -30,24 +30,34 @@ int main(){
 	else {
 		std::cout << "Connected!!" << std::endl;
 	}
+
+
 	char Buffer[128];
-	//for (;;) {
+	//char* Buffer;
+
 		recv(NewConnect, Buffer, sizeof(Buffer), NULL);
+		//recv(NewConnect,char* Bufka=new Bufka[20],20,NULL)
 		int Size = strlen(Buffer);
 		Size = sizeof(Buffer);
+		std::cout << Size << std::endl;
+		std::cout << "Msg from client= ";
 
-		//std::cout << "Size= " << (int)Buffer[0] << std::endl;
-		//std::cout << "Msg from client= "<< std::endl;
-		for (int Index = 0; Index <= Size; Index++) {
-			std::cout << Buffer[Index];
-		}
-		std::cout << std::endl;
-		int i = 0;
-		while ((int)Buffer[i]!=-52) {
+		int i = 0,NumberFromClient=0;
+		while ((int)Buffer[i]>-52) {
 			std::cout << (int)Buffer[i];
 			i++;
 		}
 		std::cout << std::endl;
-	//}
+
+		for (int n = 0; n < i; n++) {
+			NumberFromClient += (Buffer[n]) * pow(10, i - 1 - n);
+		}
+		if ((i >= 2) && (NumberFromClient % 32 == 0)) {
+			std::cout << "Good Num!";
+		}
+		else {
+			std::cout << "Bad Num";
+		}
+		std::cout << std::endl;
 	system("pause");
 }

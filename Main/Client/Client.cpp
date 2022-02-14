@@ -27,11 +27,10 @@ char* GetSizeOfInt(int num) {
 		Size++;
 	}
 	char* Array = new char[Size-1];
+
 	Array[0] = num / (int)pow(10, Size - 1);
-	std::cout << (int)Array[0];
 	for (int i = 1; i < Size; i++) {
 		Array[i] = num / (int)pow(10, Size - 1 - i) - (int)Array[i-1] * 10;
-		std::cout << (int)Array[i];
 		num -= (int)Array[i-1] * pow(10, Size - i);
 	}
 	return Array;
@@ -45,10 +44,10 @@ public:
 		Switcher.lock();
 		std::cin >> Word;
 		int Size = strlen(Word);
-		/*if (Size > 64) {
+		if (Size > 64) {
 			std::cout << "Long Word!" << std::endl;
 			return;
-		}*/
+		}
 
 		for (int Index = 0; Index < Size;Index++) {
 				if (('9' < Word[Index]) || (Word[Index] < '0')) {
@@ -74,7 +73,6 @@ public:
 		for (int Index = 0; Index < Size; Index++) {
 			if (('9' >= Word[Index]) && (Word[Index] >= '0')) {
 				sum += Word[Index] - '0';
-				//std::cout << "Element= " << Word[Index] - '0' << std::endl;
 			}
 		}
 		std::cout << "Sum of Elements= " << sum << std::endl;
@@ -87,7 +85,6 @@ public:
 		}
 
 		char* Message = new char[ArraySize - 1];
-		std::cout << ArraySize << std::endl;
 		Message=GetSizeOfInt(sum);
 		send(Connection,Message,sizeof(Message), NULL);
 
@@ -125,7 +122,6 @@ int main()
 	std::thread FirstT(&Chat::GetWord, Client,Client.Buffer);
 	if (FirstT.joinable())
 		FirstT.join();
-	//std::cout << Client.Buffer[0] << std::endl;
 	std::thread SecondT(&Chat::SendWord, Client, Client.Buffer,Connection);
 	if (SecondT.joinable())
 		SecondT.join();
