@@ -1,4 +1,3 @@
 ﻿  Server.cpp
-C:\My Files\GitHub\Internship-1\Main\Server\Server.cpp(38,28): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-C:\My Files\GitHub\Internship-1\Main\Server\Server.cpp(51,36): warning C4244: +=: преобразование "double" в "int", возможна потеря данных
-C:\My Files\GitHub\Internship-1\Main\Server\Server.cpp(36): error C4700: использована неинициализированная локальная переменная "Buffer"
+F:\My Files\Git Files\Internship-1\Main\Server\Server.cpp(55,37): warning C4244: +=: преобразование "double" в "int", возможна потеря данных
+  Server.vcxproj -> F:\My Files\Git Files\Internship-1\Main\Server\x64\Debug\Server.exe

@@ -20,6 +20,12 @@ char* Insert(int &SizeOfArray, char Array[],char Element,int Position){
 	return Array;
 }
 char* GetSizeOfInt(int num) {
+	if (num == 0) {
+		char Array[1];
+		Array[0] = 0;
+		return Array;
+	}
+
 	int Size = 0;
 	int NumBuf=num;
 	while (NumBuf) {
@@ -36,65 +42,82 @@ char* GetSizeOfInt(int num) {
 	return Array;
 }
 class Chat {
-private:
-	
 public:
 	char Buffer[128];
 	void GetWord(char Word[128]) {
-		Switcher.lock();
-		std::cin >> Word;
-		int Size = strlen(Word);
-		if (Size > 64) {
-			std::cout << "Long Word!" << std::endl;
-			return;
-		}
+		while(true){
 
-		for (int Index = 0; Index < Size;Index++) {
-				if (('9' < Word[Index]) || (Word[Index] < '0')) {
-					std::cout << "BadWord" <<std::endl;
+			Switcher.lock();
+			std::cout << "Wait Word!" << std::endl;
+			std::cin >> Word;
+			if (sizeof(Word)) {
+				
+				int Size = strlen(Word);
+				if (Size > 64) {
+					std::cout << "Long Word!" << std::endl;
 					return;
 				}
-		}
 
-		std::sort(Word,Word+Size);
-		for (int Index = 0; Index < Size; Index++) {
-			if (Word[Index]%2 == 0) {
-				Word[Index] = 'K';
-				Insert(Size, Word, 'B', ++Index);
+				for (int Index = 0; Index < Size; Index++) {
+					if (('9' < Word[Index]) || (Word[Index] < '0')) {
+						std::cout << "BadWord" << std::endl;
+						return;
+					}
+				}
+
+				std::sort(Word, Word + Size);
+				for (int Index = 0; Index < Size; Index++) {
+					if (Word[Index] % 2 == 0) {
+						Word[Index] = 'K';
+						Insert(Size, Word, 'B', ++Index);
+					}
+				}
+				
 			}
-		}
 
-		Switcher.unlock();
-		return;
+			Switcher.unlock();
+			Sleep(5);
+		}
 	}
 	void SendWord(char Word[128], SOCKET Connection) {
-		Switcher.lock();
-		int Size = strlen(Word),sum=0;
-		for (int Index = 0; Index < Size; Index++) {
-			if (('9' >= Word[Index]) && (Word[Index] >= '0')) {
-				sum += Word[Index] - '0';
-			}
+		for (;;) {
+				Switcher.lock();
+
+				int Size = strlen(Word), sum = 0;
+				for (int Index = 0; Index < Size; Index++) {
+					if (('9' >= Word[Index]) && (Word[Index] >= '0')) {
+						sum += Word[Index] - '0';
+					}
+				}
+				std::cout << "Get Word= " << Word << std::endl;
+				std::cout << "Sum of Elements= " << sum << std::endl << std::endl;
+
+				int ArraySize = 0;
+				int NumBuf = sum;
+				if (sum == 0) {
+					ArraySize = 1;
+				}
+
+				while (NumBuf) {
+					NumBuf /= 10;
+					ArraySize++;
+				}
+
+				if (ArraySize) {
+					char* Message = new char[ArraySize - 1];
+					Message = GetSizeOfInt(sum);
+					send(Connection, Message, sizeof(Message), NULL);
+				}
+
+				for (int i = 0; i < ArraySize; i++) {
+					Word[i] = NULL;
+				}
+
+				Switcher.unlock();
+				Sleep(50);
 		}
-		std::cout << "Sum of Elements= " << sum << std::endl;
-
-		int ArraySize = 0;
-		int NumBuf = sum;
-		while (NumBuf) {
-			NumBuf /= 10;
-			ArraySize++;
-		}
-
-		char* Message = new char[ArraySize - 1];
-		Message=GetSizeOfInt(sum);
-		send(Connection,Message,sizeof(Message), NULL);
-
-		Word = NULL;
-		Switcher.unlock();
-		
-		return;
 	}
 };
-
 int main()
 {	
 	WSAData wsaData;
@@ -115,15 +138,20 @@ int main()
 		std::cout << "Error Connect to Server" << std::endl;
 		return 1;
 	}
+
 	std::cout << "Connect to Server" << std::endl;
 	
 	Chat Client;
-	for (;;) {
+
 	std::thread FirstT(&Chat::GetWord, Client,Client.Buffer);
+
+	Sleep(500);
+	std::thread SecondT(&Chat::SendWord, Client, Client.Buffer,Connection);
+
 	if (FirstT.joinable())
 		FirstT.join();
-	std::thread SecondT(&Chat::SendWord, Client, Client.Buffer,Connection);
-	if (SecondT.joinable())
+
+	if (SecondT.joinable()){
 		SecondT.join();
 	}
 

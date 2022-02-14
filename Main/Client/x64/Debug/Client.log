@@ -1,5 +1,6 @@
 ﻿  Client.cpp
-C:\My Files\GitHub\Internship-1\Main\Client\Client.cpp(34,26): warning C4244: -=: преобразование "double" в "int", возможна потеря данных
-C:\My Files\GitHub\Internship-1\Main\Client\Client.cpp(46,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-C:\My Files\GitHub\Internship-1\Main\Client\Client.cpp(72,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-  Client.vcxproj -> C:\My Files\GitHub\Internship-1\Main\Client\x64\Debug\Client.exe
+F:\My Files\Git Files\Internship-1\Main\Client\Client.cpp(40,26): warning C4244: -=: преобразование "double" в "int", возможна потеря данных
+F:\My Files\Git Files\Internship-1\Main\Client\Client.cpp(55,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+F:\My Files\Git Files\Internship-1\Main\Client\Client.cpp(86,1): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+F:\My Files\Git Files\Internship-1\Main\Client\Client.cpp(26): warning C4172: возвращение адреса локальной или временной переменной : Array
+  Client.vcxproj -> F:\My Files\Git Files\Internship-1\Main\Client\x64\Debug\Client.exe

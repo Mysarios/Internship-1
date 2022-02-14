@@ -33,31 +33,39 @@ int main(){
 
 
 	char Buffer[128];
-	//char* Buffer;
-
+	for (;;) {
 		recv(NewConnect, Buffer, sizeof(Buffer), NULL);
-		//recv(NewConnect,char* Bufka=new Bufka[20],20,NULL)
-		int Size = strlen(Buffer);
-		Size = sizeof(Buffer);
-		std::cout << Size << std::endl;
-		std::cout << "Msg from client= ";
+		//std::cout << Buffer << std::endl;
 
-		int i = 0,NumberFromClient=0;
-		while ((int)Buffer[i]>-52) {
-			std::cout << (int)Buffer[i];
-			i++;
-		}
-		std::cout << std::endl;
+		//if (Buffer[0] == 0) {
+			//std::cout << "Bad Num";
+			//Buffer[0] = NULL;
+			//continue;
+		//}
+			//std::cout << "Msg from client= ";
 
-		for (int n = 0; n < i; n++) {
-			NumberFromClient += (Buffer[n]) * pow(10, i - 1 - n);
-		}
-		if ((i >= 2) && (NumberFromClient % 32 == 0)) {
-			std::cout << "Good Num!";
-		}
-		else {
-			std::cout << "Bad Num";
-		}
-		std::cout << std::endl;
+			int i = 0, NumberFromClient = 0;
+			while ((int)Buffer[i] > 0) {
+				//std::cout << (int)Buffer[i];
+				i++;
+			}
+			std::cout << std::endl;
+
+			for (int n = 0; n < i; n++) {
+				NumberFromClient += (Buffer[n]) * pow(10, i - 1 - n);
+			}
+			if ((i >= 2) && (NumberFromClient % 32 == 0)) {
+				std::cout << "Good Num!";
+			}
+			else {
+				std::cout << "Bad Num";
+			}
+			std::cout << std::endl;
+
+			for (int n = 0; n < i; n++) {
+				Buffer[n] = NULL;
+			}
+		//}
+	}
 	system("pause");
 }

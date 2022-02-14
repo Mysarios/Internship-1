@@ -1,2 +1,3 @@
 C:\Users\Дима\Dima\Рабочий стол\University\Стажировка\Client\x64\Debug\Client.exe
 C:\My Files\GitHub\Internship-1\Main\Client\x64\Debug\Client.exe
+F:\My Files\Git Files\Internship-1\Main\Client\x64\Debug\Client.exe
