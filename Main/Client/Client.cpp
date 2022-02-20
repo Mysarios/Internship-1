@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <mutex>
 #include <cmath>
-#pragma comment(lib,"ws2_32.lib")
-#pragma warning(disable:4996)
 #include <WinSock2.h>
 
+#pragma comment(lib,"ws2_32.lib")
+#pragma warning(disable:4996)
+
 std::mutex Switcher;
-char* Insert(int &SizeOfArray, char Array[],char Element,int Position){
+char* InsertInArray(int &SizeOfArray, char Array[],char Element,int Position){
 	int Index;
 
 	for (Index = SizeOfArray; Index >= Position; Index--)
@@ -45,42 +46,57 @@ class Chat {
 public:
 	char Buffer[128];
 	void GetWord(char Word[128]) {
-		while(true){
-
+		for ( ; ; ){
 			Switcher.lock();
-			std::cout << "Wait Word!" << std::endl;
-			std::cin >> Word;
-			if (sizeof(Word)) {
-				
-				int Size = strlen(Word);
-				if (Size > 64) {
-					std::cout << "Long Word!" << std::endl;
-					return;
+			
+			int Size;
+			int Check = 0;
+			do {
+				std::cout << "-->Enter word => ";
+
+				//Проверка старого ввода 
+				if (char(std::cin.peek()) == '\n')
+					std::cin.ignore();
+
+				if (std::cin.fail())
+				{
+					std::cin.clear();
+					std::cin.ignore(32767, '\n');
 				}
 
+				std::cin.getline(Word,66);
+				Check = 0;
+				Size = strlen(Word);
+				if (Size > 64){
+					std::cout << "Long word. Try again." << std::endl;
+					Check = 1;
+				}
 				for (int Index = 0; Index < Size; Index++) {
 					if (('9' < Word[Index]) || (Word[Index] < '0')) {
-						std::cout << "BadWord" << std::endl;
-						return;
+						Check = 2;
 					}
+				}
+				if (Check==2) {
+					std::cout << "Bad word. Try again." << std::endl;
 				}
 
-				std::sort(Word, Word + Size);
-				for (int Index = 0; Index < Size; Index++) {
+			} while (Check>0);
+
+			std::sort(Word, Word + Size);
+			for (int Index = 0; Index < Size; Index++) {
 					if (Word[Index] % 2 == 0) {
 						Word[Index] = 'K';
-						Insert(Size, Word, 'B', ++Index);
+						InsertInArray(Size, Word, 'B', ++Index);
 					}
-				}
-				
-			}
+				}				
 
 			Switcher.unlock();
 			Sleep(5);
 		}
 	}
-	void SendWord(char Word[128], SOCKET Connection) {
-		for (;;) {
+	void SendWord(char Word[128], SOCKET Connection, SOCKADDR_IN addres) {
+		int MsgSend = 0;
+		for ( ; ; ) {
 				Switcher.lock();
 
 				int Size = strlen(Word), sum = 0;
@@ -106,9 +122,14 @@ public:
 				if (ArraySize) {
 					char* Message = new char[ArraySize - 1];
 					Message = GetSizeOfInt(sum);
-					send(Connection, Message, sizeof(Message), NULL);
+					MsgSend = send(Connection, Message, sizeof(Message), NULL);
+					if (MsgSend < 0) {
+						std::cout << "Server was crash.    Try to reconnecting..." << std::endl;
+						ConnectToServer(Connection, addres);
+						MsgSend=send(Connection, Message, sizeof(Message), NULL);
+					}	
+					
 				}
-
 				for (int i = 0; i < ArraySize; i++) {
 					Word[i] = NULL;
 				}
@@ -117,9 +138,25 @@ public:
 				Sleep(50);
 		}
 	}
+	void ConnectToServer(SOCKET &Connection, SOCKADDR_IN &addres) {
+		int SizeOfAddr = sizeof(addres);
+		addres.sin_family = AF_INET;
+
+		bool SuccessfulConnect = connect(Connection, (SOCKADDR*)&addres, SizeOfAddr);
+		if (SuccessfulConnect) {
+			std::cout << "Wait to connect... => ";
+			do{
+			Connection = socket(AF_INET, SOCK_STREAM, NULL);
+				SuccessfulConnect = connect(Connection, (SOCKADDR*)&addres, SizeOfAddr);
+			}while (SuccessfulConnect);
+		}
+			std::cout << "Connect to Server.\n" << std::endl;
+			return ;
+		
+
+	}
 };
-int main()
-{	
+int main(){	
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
 	if (WSAStartup(DLLVersion, &wsaData) != 0) {
@@ -127,37 +164,25 @@ int main()
 		exit(1);
 	}
 
-	SOCKADDR_IN addr;
-	int SizeOfAddr = sizeof(addr);
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	addr.sin_port = htons(1111);
-	addr.sin_family = AF_INET;
-
+	SOCKADDR_IN addres;
+	addres.sin_addr.s_addr = inet_addr("127.0.0.1");
+	addres.sin_port = htons(1111);
+	addres.sin_family = AF_INET;
 	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
-	if (connect(Connection, (SOCKADDR*)&addr, SizeOfAddr) != 0) {
-		std::cout << "Error Connect to Server" << std::endl;
-		return 1;
-	}
+	int SizeOfAddr = sizeof(addres);
 
-	std::cout << "Connect to Server" << std::endl;
-	
 	Chat Client;
+	Client.ConnectToServer(Connection, addres);
 
-	std::thread FirstT(&Chat::GetWord, Client,Client.Buffer);
-
+	std::thread FirstThread(&Chat::GetWord, Client,Client.Buffer);
 	Sleep(500);
-	std::thread SecondT(&Chat::SendWord, Client, Client.Buffer,Connection);
+	std::thread SecondThread(&Chat::SendWord, Client, Client.Buffer,Connection,addres);
 
-	if (FirstT.joinable())
-		FirstT.join();
+	if (FirstThread.joinable())
+		FirstThread.join();
 
-	if (SecondT.joinable()){
-		SecondT.join();
-	}
-
-	system("pause");
-
+	if (SecondThread.joinable())
+		SecondThread.join();
 
 	return 0;
 }
-
